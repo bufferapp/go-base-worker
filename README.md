@@ -1,2 +1,6 @@
 # go-base-worker
-AWS SQS go library 
+All the things to make it easy to use Go to create our workers
+
+## What you'll find here ?
+- Libraries to read from queues like AWS SQS, Kafka...
+- Libraries to make it easy read/write  from/to, like Elasticsearch, MongoDB...
