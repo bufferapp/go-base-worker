@@ -56,3 +56,19 @@ func Receive(sqsSvc Type) (*sqs.Message, error) {
 
 	return nil, nil
 }
+
+// Delete SQS message with its Handle
+func Delete(sqsSvc Type, ReceiptHandle *string) bool {
+
+	resultDelete, err := sqsSvc.service.DeleteMessage(&sqs.DeleteMessageInput{
+		QueueUrl:      aws.String(sqsSvc.queueURL),
+		ReceiptHandle: ReceiptHandle,
+	})
+
+	if err != nil {
+		fmt.Println("Delete Error", err)
+		return false
+	}
+
+	return true
+}
