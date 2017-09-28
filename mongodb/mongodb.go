@@ -19,8 +19,8 @@ func Initialize(mongoConnectionString string) MongoType {
 		panic("cococo")
 		panic(err)
 	}
-
 	defer sess.Close()
+	sess.SetMode(mgo.Secondary, true)
 
 	s := MongoType{
 		Session: sess,
