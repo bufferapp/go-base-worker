@@ -10,8 +10,8 @@ import (
 
 // SQSType all things SQS
 type SQSType struct {
-	queueURL string
-	service  *sqs.SQS
+	QueueURL string
+	Service  *sqs.SQS
 }
 
 // Initialize the SQS queue service
@@ -24,8 +24,8 @@ func Initialize(url string) SQSType {
 
 	svc := sqs.New(sess)
 	s := SQSType{
-		queueURL: url,
-		service:  svc,
+		QueueURL: url,
+		Service:  svc,
 	}
 	return s
 }
@@ -33,8 +33,8 @@ func Initialize(url string) SQSType {
 // Receive SQS message
 func Receive(sqsSvc SQSType) (*sqs.Message, error) {
 
-	result, err := sqsSvc.service.ReceiveMessage(&sqs.ReceiveMessageInput{
-		QueueUrl:            aws.String(sqsSvc.queueURL),
+	result, err := sqsSvc.Service.ReceiveMessage(&sqs.ReceiveMessageInput{
+		QueueUrl:            aws.String(sqsSvc.QueueURL),
 		MaxNumberOfMessages: aws.Int64(1),
 		VisibilityTimeout:   aws.Int64(36000),
 		WaitTimeSeconds:     aws.Int64(0),
@@ -60,8 +60,8 @@ func Receive(sqsSvc SQSType) (*sqs.Message, error) {
 // Delete SQS message with its Handle
 func Delete(sqsSvc SQSType, ReceiptHandle *string) bool {
 
-	resultDelete, err := sqsSvc.service.DeleteMessage(&sqs.DeleteMessageInput{
-		QueueUrl:      aws.String(sqsSvc.queueURL),
+	resultDelete, err := sqsSvc.Service.DeleteMessage(&sqs.DeleteMessageInput{
+		QueueUrl:      aws.String(sqsSvc.QueueURL),
 		ReceiptHandle: ReceiptHandle,
 	})
 
