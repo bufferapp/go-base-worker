@@ -67,6 +67,7 @@ func Delete(sqsSvc Type, ReceiptHandle *string) bool {
 
 	if err != nil {
 		fmt.Println("Delete Error", err)
+		fmt.Println("Delete Output", resultDelete)
 		return false
 	}
 
