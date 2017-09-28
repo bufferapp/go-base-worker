@@ -8,14 +8,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/sqs"
 )
 
-// Type all things SQS
-type Type struct {
+// SQSType all things SQS
+type SQSType struct {
 	queueURL string
 	service  *sqs.SQS
 }
 
 // Initialize the SQS queue service
-func Initialize(url string) Type {
+func Initialize(url string) SQSType {
 
 	// TODO: This read ~/.aws/config, Better to explicit the env variable
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
@@ -23,7 +23,7 @@ func Initialize(url string) Type {
 	}))
 
 	svc := sqs.New(sess)
-	s := Type{
+	s := SQSType{
 		queueURL: url,
 		service:  svc,
 	}
@@ -31,7 +31,7 @@ func Initialize(url string) Type {
 }
 
 // Receive SQS message
-func Receive(sqsSvc Type) (*sqs.Message, error) {
+func Receive(sqsSvc SQSType) (*sqs.Message, error) {
 
 	result, err := sqsSvc.service.ReceiveMessage(&sqs.ReceiveMessageInput{
 		QueueUrl:            aws.String(sqsSvc.queueURL),
@@ -58,7 +58,7 @@ func Receive(sqsSvc Type) (*sqs.Message, error) {
 }
 
 // Delete SQS message with its Handle
-func Delete(sqsSvc Type, ReceiptHandle *string) bool {
+func Delete(sqsSvc SQSType, ReceiptHandle *string) bool {
 
 	resultDelete, err := sqsSvc.service.DeleteMessage(&sqs.DeleteMessageInput{
 		QueueUrl:      aws.String(sqsSvc.queueURL),
