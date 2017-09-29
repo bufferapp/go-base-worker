@@ -1,27 +1,14 @@
 package mongodb
 
 import (
-	"fmt"
-
 	"gopkg.in/mgo.v2"
 )
 
-// MongoType all things Mongo
-type MongoType struct {
-	Session *mgo.Session
-}
-
-// Initialize mongo connection
-func Initialize(mongoConnectionString string) MongoType {
-	sess, err := mgo.Dial(mongoConnectionString)
-	if err != nil {
-		fmt.Println("No mongo connection : (")
-		panic(err)
+// Dial opens a mongo connection with an URL on secondary.
+func Dial(url string) (sess *mgo.Session, err error) {
+	if sess, err = mgo.Dial(url); err != nil {
+		return
 	}
-	defer sess.Close()
 	sess.SetMode(mgo.Secondary, true)
-	s := MongoType{
-		Session: sess,
-	}
-	return s
+	return
 }
