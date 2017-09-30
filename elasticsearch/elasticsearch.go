@@ -45,7 +45,7 @@ func NewClient(awsAccessKeyID string, awsSecretAccessKey string, url string) (*C
 
 // IndexDoc Index document in ES
 func (c *Client) IndexDoc(body interface{}, idx string, t string, id string) {
-	put1, err := c.Client.Index().
+	_, err := c.Client.Index().
 		Index(idx).
 		Type(t).
 		Id(id).
