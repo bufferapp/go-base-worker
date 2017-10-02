@@ -15,11 +15,11 @@ type Client struct {
 }
 
 // NewClient creates a SQS client.
-func NewClient(awsAccessKeyID string, awsSecretAccessKey string, queueURL string) *Client {
+func NewClient(awsAccessKeyID string, awsSecretAccessKey string, queueURL string) *Client, error {
 
 	sess, err := session.NewSession()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	awsConfig := &aws.Config{
@@ -30,7 +30,7 @@ func NewClient(awsAccessKeyID string, awsSecretAccessKey string, queueURL string
 	return &Client{
 		queueURL: queueURL,
 		client:   sqs.New(sess, awsConfig),
-	}
+	}, nil
 }
 
 // Receive receive a message from the queue.
