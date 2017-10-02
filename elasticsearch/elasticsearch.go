@@ -35,6 +35,9 @@ func NewClient(awsAccessKeyID string, awsSecretAccessKey string, url string) (*C
 		elastic.SetHttpClient(awsClient),
 		elastic.SetSniff(false),
 	)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Client{
 		URL:     url,
