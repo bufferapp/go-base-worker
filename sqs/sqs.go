@@ -48,6 +48,9 @@ func (c *Client) Receive() (msg *sqs.Message, err error) {
 	}
 
 	msg = out.Messages[0]
+	if len(msg) == 0 {
+		return nil, nil
+	}
 	return
 }
 
