@@ -47,10 +47,10 @@ func (c *Client) Receive() (msg *sqs.Message, err error) {
 		return
 	}
 
-	msg = out.Messages[0]
-	if len(msg) == 0 {
+	if len(out.Messages) <= 0 {
 		return nil, nil
 	}
+	msg = out.Messages[0]
 	return
 }
 
