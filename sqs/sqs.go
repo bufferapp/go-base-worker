@@ -2,6 +2,7 @@ package sqs
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/pkg/errors"
@@ -14,14 +15,21 @@ type Client struct {
 }
 
 // NewClient creates a SQS client.
-func NewClient(queueURL string) *Client {
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
+func NewClient(awsAccessKeyID string, awsSecretAccessKey string, queueURL string) *Client {
+
+	sess, err := session.NewSession()
+	if err != nil {
+		return nil
+	}
+
+	awsConfig := &aws.Config{
+		Credentials: credentials.NewStaticCredentials(awsAccessKeyID, awsSecretAccessKey, ""),
+		Region:      aws.String("us-east-1"),
+	}
 
 	return &Client{
 		queueURL: queueURL,
-		client:   sqs.New(sess),
+		client:   sqs.New(sess, awsConfig),
 	}
 }
 
