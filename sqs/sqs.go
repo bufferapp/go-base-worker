@@ -15,7 +15,7 @@ type Client struct {
 }
 
 // NewClient creates a SQS client.
-func NewClient(awsAccessKeyID string, awsSecretAccessKey string, queueURL string) *Client, error {
+func NewClient(awsAccessKeyID string, awsSecretAccessKey string, queueURL string) (*Client, error) {
 
 	sess, err := session.NewSession()
 	if err != nil {
