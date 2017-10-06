@@ -11,10 +11,8 @@ import (
 
 type Timestamp time.Time
 
-func (t *Timestamp) MarshalJSON() ([]byte, error) {
-	ts := time.Time(*t).Unix()
-	stamp := fmt.Sprint(ts)
-
+func (t Timestamp) MarshalJSON() ([]byte, error) {
+	stamp := fmt.Sprintf("\"%s\"", time.Time(t).Format(time.RFC3339))
 	return []byte(stamp), nil
 }
 
@@ -27,13 +25,12 @@ func (t *Timestamp) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// GetBSON Transform timestamp ms to time.Time
-func (t *Timestamp) GetBSON() (interface{}, error) {
-	if time.Time(*t).IsZero() {
-		return nil, nil
-	}
-	return time.Time(*t), nil
-}
+// func (t *Timestamp) GetBSON() (interface{}, error) {
+// 	if time.Time(*t).IsZero() {
+// 		return nil, nil
+// 	}
+// 	return time.Time(*t), nil
+// }
 
 func (t *Timestamp) SetBSON(raw bson.Raw) error {
 	var tm int64
