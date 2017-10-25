@@ -47,7 +47,7 @@ func NewClient(awsAccessKeyID string, awsSecretAccessKey string, url string) (*C
 }
 
 // IndexDoc Index document in ES
-func (c *Client) IndexDoc(body interface{}, idx string, t string, id string) error {
+func (c *Client) IndexDoc(body interface{}, idx string, t string, id string) (bool, error) {
 	_, err := c.Client.Index().
 		Index(idx).
 		Type(t).
@@ -56,7 +56,7 @@ func (c *Client) IndexDoc(body interface{}, idx string, t string, id string) err
 		Do(c.Context)
 	if err != nil {
 		// Handle error
-		return err
+		return false, err
 	}
-	return nil
+	return true, nil
 }
