@@ -2,6 +2,7 @@ package elasticsearch
 
 import (
 	"context"
+	"log"
 
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/signer/v4"
@@ -24,6 +25,7 @@ func NewClient(awsAccessKeyID string, awsSecretAccessKey string, url string, env
 	var c *elastic.Client
 	var err error
 
+	log.Println("Accessing ES cluster ", url)
 	if env == "DEVELOPMENT" {
 		c, err = elastic.NewClient(
 			elastic.SetURL(url),
