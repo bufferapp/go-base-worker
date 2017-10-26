@@ -21,9 +21,11 @@ type Client struct {
 func NewClient(awsAccessKeyID string, awsSecretAccessKey string, url string, env string) (*Client, error) {
 
 	ctx := context.Background()
+	var c *elastic.Client
+	var err error
 
 	if env == "DEVELOPMENT" {
-		c, err := elastic.NewClient(
+		c, err = elastic.NewClient(
 			elastic.SetURL(url),
 			elastic.SetScheme("http"),
 			elastic.SetSniff(false),
@@ -36,13 +38,14 @@ func NewClient(awsAccessKeyID string, awsSecretAccessKey string, url string, env
 			return nil, err
 		}
 
-		c, err := elastic.NewClient(
+		c, err = elastic.NewClient(
 			elastic.SetURL(url),
 			elastic.SetScheme("https"),
 			elastic.SetHttpClient(awsClient),
 			elastic.SetSniff(false),
 		)
 	}
+
 	if err != nil {
 		return nil, err
 	}
