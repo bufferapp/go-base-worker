@@ -53,6 +53,7 @@ func (c *Client) IndexDoc(body interface{}, idx string, t string, id string) (bo
 		Type(t).
 		Id(id).
 		BodyJson(body).
+		Refresh("true").
 		Do(c.Context)
 	if err != nil {
 		// Handle error
