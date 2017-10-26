@@ -18,23 +18,31 @@ type Client struct {
 
 // NewClient Create a new Elasticsearch client for AWS Elasticsearch Service
 // https://github.com/olivere/elastic/wiki/Using-with-AWS-Elasticsearch-Service
-func NewClient(awsAccessKeyID string, awsSecretAccessKey string, url string) (*Client, error) {
+func NewClient(awsAccessKeyID string, awsSecretAccessKey string, url string, env string) (*Client, error) {
 
 	ctx := context.Background()
 
-	awsCredentials := credentials.NewStaticCredentials(awsAccessKeyID, awsSecretAccessKey, "")
-	signer := v4.NewSigner(awsCredentials)
-	awsClient, err := aws_signing_client.New(signer, nil, "es", "us-east-1")
-	if err != nil {
-		return nil, err
-	}
+	if env == "DEVELOPMENT" {
+		c, err := elastic.NewClient(
+			elastic.SetURL(url),
+			elastic.SetScheme("http"),
+			elastic.SetSniff(false),
+		)
+	} else {
+		awsCredentials := credentials.NewStaticCredentials(awsAccessKeyID, awsSecretAccessKey, "")
+		signer := v4.NewSigner(awsCredentials)
+		awsClient, err := aws_signing_client.New(signer, nil, "es", "us-east-1")
+		if err != nil {
+			return nil, err
+		}
 
-	c, err := elastic.NewClient(
-		elastic.SetURL(url),
-		elastic.SetScheme("https"),
-		elastic.SetHttpClient(awsClient),
-		elastic.SetSniff(false),
-	)
+		c, err := elastic.NewClient(
+			elastic.SetURL(url),
+			elastic.SetScheme("https"),
+			elastic.SetHttpClient(awsClient),
+			elastic.SetSniff(false),
+		)
+	}
 	if err != nil {
 		return nil, err
 	}
