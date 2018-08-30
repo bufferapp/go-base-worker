@@ -1,7 +1,8 @@
 package mongodb
 
 import (
-	"gopkg.in/mgo.v2"
+//	"gopkg.in/mgo.v2"
+	"github.com/globalsign/mgo"
 )
 
 // Dial opens a mongo connection with an URL on secondary.
