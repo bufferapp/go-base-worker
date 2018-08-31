@@ -26,7 +26,7 @@ func NewClient(awsAccessKeyID string, awsSecretAccessKey string, url string, env
 	var err error
 
 	log.Println("Accessing ES cluster ", url)
-	if env == "DEVELOPMENT" {
+	if env == "LOCAL" {
 		c, err = elastic.NewClient(
 			elastic.SetURL(url),
 			elastic.SetScheme("http"),
