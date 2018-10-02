@@ -66,7 +66,7 @@ func (c *Client) IndexDoc(body interface{}, idx string, t string, id string) (*e
 		Type(t).
 		Id(id).
 		BodyJson(body).
-		Refresh("true"). // We want the document available right after the indexing
+		// Refresh("true"). // We want the document available right after the indexing.  refreshing is expensive
 		Do(c.Context)
 	if err != nil {
 		// Handle error
