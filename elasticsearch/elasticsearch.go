@@ -66,11 +66,25 @@ func (c *Client) IndexDoc(body interface{}, idx string, t string, id string) (*e
 		Type(t).
 		Id(id).
 		BodyJson(body).
-		Refresh("true"). // We want the document available right after the indexing
+		// Refresh("true"). // We want the document available right after the indexing.  refreshing is expensive
 		Do(c.Context)
 	if err != nil {
 		// Handle error
 		return indexResponse, err
 	}
 	return indexResponse, nil
+}
+
+// DeleteDoc Delete document in ES
+func (c *Client) DeleteDoc(idx string, t string, id string) (*elastic.DeleteResponse, error) {
+	deleteResponse, err := c.Client.Delete().
+		Index(idx).
+		Type(t).
+		Id(id).
+		Do(c.Context)
+	if err != nil {
+		// Handle error
+		return deleteResponse, err
+	}
+	return deleteResponse, nil
 }
