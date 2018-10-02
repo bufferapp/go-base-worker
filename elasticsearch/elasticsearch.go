@@ -74,3 +74,17 @@ func (c *Client) IndexDoc(body interface{}, idx string, t string, id string) (*e
 	}
 	return indexResponse, nil
 }
+
+// DeleteDoc Delete document in ES
+func (c *Client) DeleteDoc(idx string, t string, id string) (*elastic.DeleteResponse, error) {
+	deleteResponse, err := c.Client.Delete().
+		Index(idx).
+		Type(t).
+		Id(id).
+		Do(c.Context)
+	if err != nil {
+		// Handle error
+		return deleteResponse, err
+	}
+	return deleteResponse, nil
+}
