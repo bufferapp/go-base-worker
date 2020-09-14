@@ -40,7 +40,7 @@ func (c *Client) Receive() (msg *sqs.Message, err error) {
 		QueueUrl:            aws.String(c.queueURL),
 		MaxNumberOfMessages: aws.Int64(1),
 		VisibilityTimeout:   aws.Int64(36000),
-		WaitTimeSeconds:     aws.Int64(0),
+		WaitTimeSeconds:     aws.Int64(20),
 	})
 	if err != nil {
 		err = errors.Wrap(err, "receiving sqs message failed")
