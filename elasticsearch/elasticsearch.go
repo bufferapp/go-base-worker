@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/signer/v4"
@@ -64,6 +65,7 @@ func NewClient(awsAccessKeyID string, awsSecretAccessKey string, url string, env
 
 		// Create HTTP client with retryable transport to handle HTTP/2 GOAWAY frames
 		httpClient := &http.Client{
+			Timeout: 60 * time.Second,
 			Transport: &retryableTransport{
 				transport: http.DefaultTransport,
 			},
