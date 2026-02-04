@@ -23,10 +23,10 @@ func (t *retryableTransport) RoundTrip(req *http.Request) (*http.Response, error
 	// If body exists and GetBody is not set, capture the body for retries
 	if req.Body != nil && req.GetBody == nil {
 		bodyBytes, err := io.ReadAll(req.Body)
+		req.Body.Close() // Always close, regardless of ReadAll success/failure
 		if err != nil {
 			return nil, err
 		}
-		req.Body.Close()
 
 		req.Body = io.NopCloser(bytes.NewReader(bodyBytes))
 		req.GetBody = func() (io.ReadCloser, error) {
