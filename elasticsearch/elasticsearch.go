@@ -1,14 +1,40 @@
 package elasticsearch
 
 import (
+	"bytes"
 	"context"
+	"io"
 	"log"
+	"net/http"
 
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/signer/v4"
 	"github.com/sha1sum/aws_signing_client"
 	elastic "gopkg.in/olivere/elastic.v5"
 )
+
+// retryableTransport wraps an http.RoundTripper to set GetBody on requests,
+// allowing HTTP/2 to retry requests when receiving GOAWAY frames.
+type retryableTransport struct {
+	transport http.RoundTripper
+}
+
+func (t *retryableTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	// If body exists and GetBody is not set, capture the body for retries
+	if req.Body != nil && req.GetBody == nil {
+		bodyBytes, err := io.ReadAll(req.Body)
+		if err != nil {
+			return nil, err
+		}
+		req.Body.Close()
+
+		req.Body = io.NopCloser(bytes.NewReader(bodyBytes))
+		req.GetBody = func() (io.ReadCloser, error) {
+			return io.NopCloser(bytes.NewReader(bodyBytes)), nil
+		}
+	}
+	return t.transport.RoundTrip(req)
+}
 
 // Client all things ES
 type Client struct {
@@ -35,7 +61,15 @@ func NewClient(awsAccessKeyID string, awsSecretAccessKey string, url string, env
 	} else {
 		awsCredentials := credentials.NewStaticCredentials(awsAccessKeyID, awsSecretAccessKey, "")
 		signer := v4.NewSigner(awsCredentials)
-		awsClient, err := aws_signing_client.New(signer, nil, "es", "us-east-1")
+
+		// Create HTTP client with retryable transport to handle HTTP/2 GOAWAY frames
+		httpClient := &http.Client{
+			Transport: &retryableTransport{
+				transport: http.DefaultTransport,
+			},
+		}
+
+		awsClient, err := aws_signing_client.New(signer, httpClient, "es", "us-east-1")
 		if err != nil {
 			return nil, err
 		}
