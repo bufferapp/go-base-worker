@@ -21,9 +21,15 @@ type Client struct {
 type Option func(*Client)
 
 // WithVisibilityTimeout sets the visibility timeout in seconds for received messages.
-// Default is 120 seconds.
+// Valid range is 0–43200 (12 hours). Default is 120 seconds.
 func WithVisibilityTimeout(seconds int64) Option {
 	return func(c *Client) {
+		if seconds < 0 {
+			seconds = 0
+		}
+		if seconds > 43200 {
+			seconds = 43200
+		}
 		c.visibilityTimeout = seconds
 	}
 }
@@ -43,9 +49,15 @@ func WithMaxMessages(n int64) Option {
 }
 
 // WithWaitTimeSeconds sets the long-poll wait time in seconds.
-// Default is 20 seconds.
+// Valid range is 0–20. Default is 20 seconds.
 func WithWaitTimeSeconds(seconds int64) Option {
 	return func(c *Client) {
+		if seconds < 0 {
+			seconds = 0
+		}
+		if seconds > 20 {
+			seconds = 20
+		}
 		c.waitTimeSeconds = seconds
 	}
 }
@@ -79,10 +91,9 @@ func NewClient(awsAccessKeyID string, awsSecretAccessKey string, queueURL string
 }
 
 // Receive receives a single message from the queue.
-// For backwards compatibility, returns only the first message even if
-// multiple are fetched. Use ReceiveBatch to get all messages.
+// It polls SQS with MaxNumberOfMessages=1 so no other messages are hidden.
 func (c *Client) Receive() (msg *sqs.Message, err error) {
-	msgs, err := c.ReceiveBatch()
+	msgs, err := c.receiveMessages(1)
 	if err != nil {
 		return nil, err
 	}
@@ -94,9 +105,13 @@ func (c *Client) Receive() (msg *sqs.Message, err error) {
 
 // ReceiveBatch receives up to MaxMessages messages from the queue.
 func (c *Client) ReceiveBatch() ([]*sqs.Message, error) {
+	return c.receiveMessages(c.maxMessages)
+}
+
+func (c *Client) receiveMessages(maxMessages int64) ([]*sqs.Message, error) {
 	out, err := c.client.ReceiveMessage(&sqs.ReceiveMessageInput{
 		QueueUrl:            aws.String(c.queueURL),
-		MaxNumberOfMessages: aws.Int64(c.maxMessages),
+		MaxNumberOfMessages: aws.Int64(maxMessages),
 		VisibilityTimeout:   aws.Int64(c.visibilityTimeout),
 		WaitTimeSeconds:     aws.Int64(c.waitTimeSeconds),
 	})
